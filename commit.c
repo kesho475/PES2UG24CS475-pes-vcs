@@ -193,9 +193,22 @@ int head_update(const ObjectID *new_commit) {
 //   - head_update       : moves the branch pointer to your new commit
 //
 // Returns 0 on success, -1 on error.
+// created a new commit
 int commit_create(const char *message, ObjectID *commit_id_out) {
-    // TODO: Implement commit creation
-    // (See Lab Appendix for logical steps)
-    (void)message; (void)commit_id_out;
+    Commit commit;
+    memset(&commit, 0, sizeof(Commit)); // Start with a clean slate
+
+    // 1. Build a tree snapshot from the current staging area
+    if (tree_from_index(&commit.tree) != 0) return -1;
+
+    // 2. Read the current HEAD to find the parent commit
+    // If head_read returns 0, a parent exists. If it fails, this is the first commit!
+    if (head_read(&commit.parent) == 0) {
+        commit.has_parent = 1;
+    } else {
+        commit.has_parent = 0;
+    }
+
+    //
     return -1;
 }
