@@ -168,8 +168,16 @@ while (i < count) {
             // Recursively build the tree for this subdirectory
             ObjectID sub_hash;
             if (write_tree_level(&entries[i], j - i, depth + dir_len + 1, &sub_hash) != 0) {
-                return -1;
-            }
+            // Serialize the finished tree and write it to the object store
+            void *data;
+            size_t len;
+            if (tree_serialize(&tree, &data, &len) != 0) return -1;
+    
+            int rc = object_write(OBJ_TREE, data, len, out_hash);
+            free(data);
+    
+            return rc;
+}
 
             TreeEntry *te = &tree.entries[tree.count++];
             te->mode = 0040000; // Directory mode
